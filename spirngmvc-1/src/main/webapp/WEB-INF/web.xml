@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+
+    <!-- 这个DispatcherServlet我们叫做【前端控制器】 -->
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>springmvc</servlet-name>
+        <!--
+           /表示：除xxx.jsp结尾的请求路径之外的所有请求路径
+           /*表示：所有的请求路径
+           如果是xxx.jsp请求路径，那么就走自己jsp对应的servlet,不走springmvc 【jsp本质上就是一个servlet】
+        -->
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>

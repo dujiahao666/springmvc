@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com.powernode.springmvc.controller,com.powernode.springmvc.interceptors"/>
+
+
+    <bean id="thymeleafViewResolver" class="org.thymeleaf.spring6.view.ThymeleafViewResolver">
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="order" value="1"/>
+        <property name="templateEngine">
+            <bean class="org.thymeleaf.spring6.SpringTemplateEngine">
+                <property name="templateResolver">
+                    <bean class="org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver">
+                        <property name="prefix" value="/WEB-INF/templates/"/>
+                        <property name="suffix" value=".html"/>
+                        <property name="templateMode" value="HTML"/>
+                        <property name="characterEncoding" value="UTF-8"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven/>
+    <!--配置拦截器-->
+<!--    <mvc:interceptors>-->
+<!--        &lt;!&ndash;基本配置：第一种方式&ndash;&gt;-->
+<!--        &lt;!&ndash;默认情况下拦截所有请求&ndash;&gt;-->
+<!--        &lt;!&ndash;<bean class="com.powernode.springmvc.interceptors.Interceptor1"/>&ndash;&gt;-->
+
+<!--        &lt;!&ndash;基本配置：第二种方式&ndash;&gt;-->
+<!--        <ref bean="interceptor1"/>-->
+<!--    </mvc:interceptors>-->
+
+    <!--拦截器的高级配置: 制定一些路径被拦截，一些路径不拦截-->
+    <mvc:interceptors>
+        <!--<mvc:interceptor>可配置多个-->
+        <mvc:interceptor>
+            <!--拦截所有请求路径-->
+            <!--<mvc:mapping path="/**"/>-->
+            <mvc:mapping path="/inde23"/>
+            <mvc:mapping path="/index"/>
+            <!-- /ok请求路径不拦截-->
+            <mvc:exclude-mapping path="/ok2"/>
+            <mvc:exclude-mapping path="/ok"/>
+<!--            <ref bean="interceptor1"/>-->
+            <bean class="com.powernode.springmvc.interceptors.Interceptor1"/>
+        </mvc:interceptor>
+
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/ok2"/>
+            <ref bean="interceptor2"/>
+        </mvc:interceptor>
+
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/ok2"/>
+            <ref bean="interceptor3"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
+</beans>

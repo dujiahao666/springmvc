@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>开始测试</h1>
+<a th:href="@{/user}">修改</a><br/>
+<a th:href="@{/user/}">修改2</a><br/>
+<a th:href="@{'/user/'}">修改3</a><br/>
+<!--<a th:href="@{/user/+${sea}}">修改4</a><br/>          这种方式不可以-->
+<!--<a th:href="@{"/user/"+${sea}}">修改5</a><br/>        这种方式也不可以-->
+<a th:href="@{'/user/'+${sea}}">修改5</a><br/>        <!--这种可以-->
+
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>Title</title>
+</head>
+<body>
+<h1>ok了，老铁</h1>
+
+<!--<div th:text="method"></div>-->
+<!--这种弄出来就是普通的文字method，要加上${}-->
+<h2>reuqest的</h2>
+<div th:text="${method}"></div><br/>
+<hr/>
+<div th:text="${session.methoda}"></div>
+<hr>
+<div th:text="${application.methodb}"></div>
+</body>
+</html>

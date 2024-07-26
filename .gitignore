@@ -1,0 +1,18 @@
+# 项目排除路径
+/fuxi-001/target/
+/fuxi-002/target/
+/fuxi-004/target/
+/spirngmvc-1/target/
+/springmvc-002/target/
+/springmvc-003/target/
+/springmvc-004/target/
+/springmvc-005/target/
+/springmvc-006/target/
+/springmvc-007/target/
+/springmvc-008/target/
+/springmvc-009/target/
+/springmvc-010/target/
+/springmvc-011/target/
+/springmvc-annotation/target/
+/ssm-annotation/target/
+/usermgt/target/

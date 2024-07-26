@@ -1,0 +1,48 @@
+第一个spring mvc的程序开发流程
+    第一步：创建一个空的springmvc项目
+    第二步：设置jdk版本21
+    第三步：设置maven版本
+    第四步：创建maven模块（这里选择的是普通的maven）
+    第五步：在pom.xml中设置打包方式war
+    第六步：引入依赖：
+         springmvc依赖
+         servlet依赖（scope设置为provide，表示这个依赖最终是由第三方容器来提供的）
+         logback依赖
+         thymeleaf和spring6整合依赖
+    第七步：给maven模块添加web支持（方式一： 直接在main下创建webapp包，然后添加web.xml,加了war之后不用再手动添加webl了，当然也没哟方便多少
+       方式二：直接利用插件，jbljavatoBean,然后在添加依赖。）认准小蓝点
+
+
+
+2.spring mvc中的配置文件，名字是可以指定的，位置也可以是制定的，怎么制定？
+    设置DispatcherServlet的初始化参数：
+        <init-param>
+               <param-name>contextConfigLocation</param-name>
+               <param-value>classpath:springmvc.xml</param-value>
+        </init-param>
+
+    建议：在web服务器启动的时候，初始化DispatherServlet，这样用户第一次发送请求时，效率较高，体验好。
+
+
+3.@RequestMapping注解可以出现在类上，也可以出现在方法上，例如：
+
+    @Controller
+    @RequestMapping("/a")
+    public class UserController{
+        @RequestMapping("/b")
+        public String index(){
+            return "index";
+        }
+    }
+
+   前端浏览器发送的请求路劲是：/a/b的时候，则执行UserController#index()方法。
+
+
+
+4.关于@RequestMapping 注解的value属性
+    value属性本身是一个 String[] 字符串数组，说明多个请求路径可以映射同一个处理器方法
+    如果注解的属性是数组，并且在使用注解的时候，该数组中只有一个元素，大括号可以省略
+    如果使用某个注解的时候，如果只使用了一个value属性，那么value也是可以省略的。
+    如果只使用value属性还可以 ：@RequestMapping( {"/a","/b"})
+    value属性的别名是path
+    path属性的别名是value

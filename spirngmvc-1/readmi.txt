@@ -1,0 +1,574 @@
+第一个spring mvc的程序开发流程
+  1.1创建maven模块
+    第一步：创建一个空的springmvc项目
+    第二步：设置jdk版本21
+    第三步：设置maven版本
+    第四步：创建maven模块（这里选择的是普通的maven）
+    第五步：在pom.xml中设置打包方式war
+    第六步：引入依赖：
+         springmvc依赖
+         servlet依赖（scope设置为provide，表示这个依赖最终是由第三方容器来提供的）
+         logback依赖
+         thymeleaf和spring6整合依赖
+
+   1.2给maven模块添加web支持
+          方式一： 直接在main下创建webapp包，然后添加web.xml,加了war之后不用再手动添加webl了，当然也没哟方便多少
+          方式二：直接利用插件，jbljavatoBean,然后在添加依赖。只不过版本稍微低一点只有4.0
+          认准小蓝点
+
+   1.3 在web.xml中配置【前端调控制器】 springmvc框架内置的一个类：DispatcherServlet
+        所有的请求都应该经过dispatcherServlet的处理
+        DispatcherServlet 其实还是继承了 Httpservlet
+        重点： <url-pattern>/</url-pattern>    /表示除了：xxx.jsp以外所有的请求路径，也就是说，只要不是jsp请求路径，一定会走dispatcherServlet
+
+   1.4 编写FirstController,在类上标注@Controller注解，纳入IOC容器的管理
+       当然，也可以采用@Component注解进行标注。@Controller只是@Component注解的别名。
+
+   1.5 配置/编写 springmvc框架自己的配置文件
+         这个配置文件的默认名字:<servlet-name>-servlet.xml
+         这个配置文件的默认存放位置：WEB-INF 目录下
+         两个配置：
+              第一个：配置组件扫描
+              第二个：配置视图解析器
+
+   1.6 提供视图
+        在/WEB-INF/templates目录下新建 first.thymeleaf文件
+        在该文件中编写符合 Tymeleaf语法的字符串（编写Thymeleaf的模板语句）
+
+   1.7 提供请求映射
+        @RequestMapping("/test")
+        public String hehe(){
+            return "first";
+        }
+
+
+
+        最终会将逻辑视图名称转换为物理视图名称
+        逻辑视图名称：first
+        物理视图名称：前缀 + first + 后缀
+        最终路径是： /WEB-INF/template/first.thymeleaf
+
+        使用Thymeleaf模版引擎，将/WEB-INF/template/first.thymeleaf转换成html代码，最终响应给浏览器
+
+
+   1.8 测试
+        配置Tomcat服务器
+        解决控制台乱码问题
+        启动服务器，在浏览器地址栏发送请求：http://localhost:8080/springmvc/test
+
+   javaweb中的 a:href 以及其他跳转  之类的： 相对路径和绝对路径都是同一套路线可以放心使用
+   在thymeleaf是可以动态的获取项目的根路径的,见到<a th:href="@{/heihei}">heihei</a>于是自动加上 /项目名（使用上了绝对路径）
+
+
+
+
+  11.关于RequestMapping注解的headers属性
+     也是一个数组，用来设置请求头的映射
+
+     @RequestMapping(value="/login",headers={"Referer","Host"})
+     public String testHeader(){
+          return "ok";
+     }
+
+     当请求路径是/login,并且请求头重包含 Referer,也包含Host的时候，映射成功。
+
+
+
+  12.获取请求提交的数据
+     12.1 第一种方式：使用原生的Servlet API
+            在处理器的方法参数上提供：HttpServletRequest
+            SpringMVC框架会自动将Tomcat服务器创建request对象传递给处理器方法。
+            我们直接在处理器方法中使用request对象即可。
+            当然，HttpServletResponse,HttpSession有需要的话，也可以采用这种方式注入。
+
+     12.2 第二种方式：使用SpringMVC框架提供的一个注解：@RequestParam(请求参数)
+          @RequestParam注解中的属性：
+              value属性:value属性可以使用name属性代替
+              name属性：name属性可以使用value属性代替
+              required属性：用来设置该参数是否为必须的。默认值是true。默认情况下这个参数是必须要传递过来的。如果前端没有提交这个参数，报错，400报错
+                这个属性有点类似于 @RequestMapping注解中params 属性的作用
+                public String testParams(){
+                return "ok";
+                }
+                【都是可以不加，一旦加上了之后，若是请求中没有，则报错。且二者都是满足了，注解里面所必须的，请求中有其他的也不报错】
+                【param这个是不可以调整的】
+                【@RequestParam的是可以调整的】
+                required属性可以设置为false，这样这个参数就不是必须的了。如果前端没有提供，则不报400错误。但是由于前端没有提供这个数据，因此程序中的变量值为null。
+
+              defaultValue属性：通过defultVlue属性可以给参数赋默认值。如果前端没有提供这样的参数，参数的默认值就起作用了。
+
+
+
+     12.3 第三种方式：依靠控制器方法上的形参名来接收
+            如果 请求参数名 和 控制器方法上的 【参数名】 保持一致，那么@RequestParam注解可以省略。
+
+          【我自己测试的时候没有遇到，最好还是按照开发的规则来】
+            如果你使用的是Spring6+版本，则需要在pom.xml文件中添加如下的编辑配置。（spring5及之前的版本不需要。）
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.12.1</version>
+                        <configuration>
+                            <source>21</source>
+                            <target>21</target>
+                            <compilerArgs>
+                                <arg>-parameters</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+          注意： 如果 控制器方法上的形参名  和 请求参数名 没有对应上，那么控制器方法中的形参默认值是null
+
+
+
+     12.4 第四种方式：使用POJO类/JavaBean接收请求参数（这是最常用的）
+          底层实现原理：反射机制
+          不过使用这样方式的前提是：pojo类的属性名必须和请求参数的参数名保持一致（为了setxxx的反射获取，以及反射属性赋值）
+
+
+     13.@RequestHeader(value="",required="(默认是true)",defaultValue="")
+        该注解的作用是：将 请求头信息 映射到 方法的形参上
+        如果required默认值是false，若请求头没有这个参数，则默认值为null（要是设置了defaultValue则值就是默认值）
+        如果required默认值是true,若请求头没有这个参数，则返回400，请求的错误
+        同params一样，默认值为true，表示写value西一定要存在，其他的东西则不做要求，可以存在
+
+
+     14.@CookieValue(value="" , required="",defaultValue="")
+     用法同上面就是一模一样。cookie的信息还可以通过。
+     @GetMapping(value = "/user/reg55")
+         public String register55(HttpServletRequest request,HttpServletResponse response){
+             Cookie cookie=new Cookie("keya","这是系统携带的数据1");
+             Cookie cookie2=new Cookie("keyb","这是系统携带的数据2");
+             response.addCookie(cookie);
+             response.addCookie(cookie2);
+             response.setContentType("text/html;charset=UTF-8");
+             return "cookie";
+         }
+         这种方式进行添加
+
+     然后通过
+     @CookieValue(value = "keya")
+                           String keyA,
+                           @CookieValue(value = "keyb")
+                           String keyB
+     进行获取
+
+
+
+  14.中文乱码问题：
+     get请求乱码：解决请求行乱码问题
+     post请求乱码：解决请求体乱码问题
+
+  14.1 get请求方式的乱码问题：
+        get亲够数据在URI后面提交
+        对于tomcat9,10来说，get请求并没有请求乱码问题(有默认设置，在默认情况下URIEncoding使用的就是UTF-8的编码方式。)
+        如果版本低，出现了乱码问题。去找tomcat的conf/server.xml文件，找到其中配置端口好的标签<Connector>,在该标签中添加URIEncoding="UTF-8".
+        <Connector port="8080" protocol="HTTP/1.1"
+                       connectionTimeout="20000"
+                       redirectPort="8443"
+                       maxParameterCount="1000"
+                       URIEncoding="UTF-8"
+                       />
+        改配置文件，要重启服务器
+
+
+
+  14.2 post请求乱码问题如何解决？
+        设置request.setCharacterEncoding("UTF-8");
+        但是有一个前提：request.setCharacterEncoding("UTF-8");这一行代码必须在 String username=request.getParameter("username"); 方法执行之前执行，才有效
+
+        在tomcat10当中，我们是不需要考虑post请求的乱码问题，因为tomcat10，已经自动帮助我们执行了； request.setCharacterEncoding("UTF-8");
+        在哪里可以看呢？
+          在tomcat10的conf包下的web.xml当中有这样的配置：
+           <request-character-encoding>UTF-8</request-character-encoding>
+           <response-character-encoding>UTF-8</response-character-encoding>
+
+        注意了：对于tomcat9以及之前的版本来说，没有以上的配置。psot请求的乱码问题，响应的乱码问题都需要自行解决。
+        在request.getParamter()方法执行之前，执行:request.setCharacterEncoding("UTF-8"); ，这样问题就能够解决
+
+        第一种方案：自己编写一个过滤类：
+        public class CharacterEncodingFilter implements Filter {
+            @Override
+            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+                // 设置请求体的字符集
+                servletRequest.setCharacterEncoding("UTF-8");
+                // 设置响应体的字符集
+                servletResponse.setContentType("text/html;charset=UTF-8");
+                // 执行下一个资源
+                filterChain.doFilter(servletRequest,servletResponse);
+            }
+        }
+        在web.xml当中进行配置：配置字符编码过滤器
+
+        第二种方案:使用springmvc框架内置的字符编码过滤器即可。CharacterEncodingFilter
+
+
+  15:request域：
+    第一种方式：在SpringMVC中使用原生的Servlet API可以完成request域数据共享
+       在处理器方法上添加 HttpServletRequest参数即可。
+       request.setAttribute(Stirng str, Objtest obg)
+       request.getAttribute(String str)
+       request.removeAttribute(String str)
+
+    第二种方式：使用Model接口
+        在springMVC的处理方法的参数上添加一个接口类型：Model
+        model.addAttribute(String str, Objtect obj);
+        model.getAttribute(String str);
+
+        @RequestMapping("/testModel")
+        public String testModel(Model model){
+                //向 request域当中存储数据
+                model.addAttribute('name',value);
+                //转发
+                return "ok";
+        }
+
+        MVC架构模式：
+                  M：Model(模型，本质就是数据)
+                  V：view
+                  C：Controller
+
+
+
+        第三种方式：使用Map接口
+          语法： map.put(,)
+          在SpringMVC的处理器方法的参数上添加一个接口类型：Map
+            @RequestMapping("/testMap")
+            public String testMap(Map<String,Object> map){
+               //向request域当中存储数据
+               map.put("xin1","信息一");
+               //转发
+               return "ok";
+            }
+
+
+        第四种方式：使用ModelMap类
+            在SpringMVC的 参数上添加一个类型:ModelMap
+            语法：      modelmap.addAttribute(String str, Objtect obj);
+                       modelmap.getAttribute(String str);
+
+            @RequestMapping("/testModelMap")
+            public String testModelMap(ModelMap modelMap){
+               //向request域当中存储数据
+               modelMap.addAttribute("xin1","参数1");
+               //转发
+               return "ok";
+            }
+
+
+            研究一下:Model接口，Map接口，ModelMap类，三者之间的关系？
+                表面上使用的是不同的接口的和不同的类。实际上底层都使用了同一个对象:org.springframework.validation.support.BindingAwareModelMap
+
+                BindingAwareModelModelMap继承了ExtendModelMap类
+                ExtendModelMap继承了ModelMap类
+                ExtendModelMap实现了Model接口
+                ModelMap类继承了LinkedHashMap继承了HashMap实现了Map接口
+
+
+
+        第五种方式：使用ModelAndView类(使用Springmvc框架提供的ModelAndView类完成request域数据共享）
+          在SpringMVC框架中为了更好的体现MVC架构模式，提供了一个类:ModelAndView。这个类的实例封装了Model和view。也就是说这个类即封装了业务处理之后的数据，也体现了跳转到了哪个视图。
+          使得用它也可以完成request域数据共享。
+
+          这种方式需要注意的是：
+            1：方法的返回值类型不是String,而是ModelAndView对象。
+            2：ModelAndView不是出现在方法的参数位置，而是在方法体中new的。
+            3：需要调用addObject(String str,Object obj)向域中存储数据。
+            4.需要调用setViewName(String str)设置视图的名字。
+
+          @RequestMapping("/testServletAPI5")
+              public ModelAndView testServletAPI5(){
+                 ModelAndView modelAndView=new ModelAndView();
+                 modelAndView.addObject("xin1","当前数据是由modelAndView传来的。【方式5】");
+                 modelAndView.addObject("xin2","当前数据是由modelAndView传来的。【方式5】");
+                 modelAndView.setViewName("ok");
+                 return modelAndView;
+              }
+
+
+          这四种方式（除了原生），底层返回的都是ModelAndView，返回的一定是一个ModelAndView对象
+          比如说返回类型为String的逻辑视图名称View,底层还是会将这个view和Model一起封装成一个ModelAndView对象。（最终给DispatcherServlet）
+          然后这个对象给DispatcherServlet
+
+
+          在DispatcherServlet当中有一个doDispahcher方法，来分发调用 哪个处理器类（也可以叫控制器类）（就是标注@controller的类）的哪个处理器方法，这取决于请求路径：即
+         就是决定，通过请求路径，分发到那个处理器方法上。（决定调用那个处理器上的方法）。虽然返回的是逻辑视图名称。最终调完之后，都要返回ModelAndView这样的一个对象。
+
+        每一个处理器方法上面，都有一个路径的映射（@RequestMapping(value="xxx")）。我们根据路径映射就知道了，应该调用这个类的这个方法。方法的实际调用者
+        就是DispatcherServlet当中的doDispahcher方法
+
+
+    总结：
+        对于处理器方法来说，不管你使用的参数是Model接口，还是Map接口，还是ModelMap类，还是ModelAndView类，最终处理器方法执行结束之后，返回
+        的都是ModelAndView对象。这个返回的ModelAndView对象给DisPatcherServlet类了、
+
+        当请求路径不是JSP的时候，都会走前端控制器DispatcherServlet
+        DispatcherServlet中有一个核心方法doDispatcher(),这个方法用来通过请求路径找到对应的 处理器方法
+        然后调用 处理器方法，处理器方法返回一个逻辑视图名称（也可能会直接返回一个ModelAndView对象），底层会
+        将逻辑视图名称转为View对象，然后将View对象结合Model对象，封装一个ModelAndView对象，然后将该对象
+        返回给DisPatcherServlet类了。
+
+        调用处理器方法之后，最终封装的对象都是ModelAndView对象
+
+
+
+    16：session域
+       第一种方式：使用原生的servlet API (传参)实现 (在处理器方法的参数上添加一个HttpSession参数，SpringMVC会自动将session对象传递给这个参数。)
+       第二种方式:使用@SessionAttributes注解标注Controller
+
+    17：application域
+     这个域使用较少，在使用的时候，就使用原生的servlet API就可以了。
+      @RequestMapping("/app")
+         public String app(HttpServletRequest request){
+             ServletContext servletContext = request.getServletContext();
+             servletContext.setAttribute("xin1","这是应用域的信息");
+             return "app";
+         }
+
+
+
+
+
+     新： 回顾请求转发和请求重定向：
+          转发是一次请求，因此浏览器地址栏上的地址不会发生改变。转发是服务器内部资源跳转，由服务器来控制，不可现实跨域访问。
+          重定向是两次请求，因此浏览器地址栏上的地址会发生变化。重定向相当于浏览器重新发送了一次请求，在浏览器直接发送的请求是无法访问WEB-INF目录下受保护的资源的。可以夸域访问。
+
+          在spirngMVC中是怎么通过代码完成转发的？
+            @RequestMapping("/a")
+                public String toA() {
+                    //返回的是一个逻辑视图名称
+                    return "a";
+                }
+            注意：当 return "a"; 的时候，返回了一个逻辑视图名称。这种方式跳转到视图，默认采用的就是 forword 方法跳转过去的。只不过这个底层创建的视图对象：ThymeleafView
+
+
+          怎么转发？转发格式是什么呢？
+            return "forward:/b"; 转发到 /b，这是一次请求，底层创建的视图对象是：InternalResourceView对象。
+            "forword:/b" 这个已经不是逻辑视图名称了。是以转发的方式跳转，是一个资源的路径，不能随便写，以 forward:  开始。
+
+          怎么重定向？语法格式是什么呢？（在日常开发中使用较多）
+            return "redirect:/b"; 转发到 /b,这是两次请求，底层创建的视图对象是：RedirectView对象。
+            注意语法：必须以 redirect: 开始
+
+          在thymeleafViewResolver中：决定跳转的方式在：ThymeleafViewResolver的protected View createView()方法中决定。
+
+          总结：
+            转发：return "forward:/b" 底层创建的是InternalResourceView对象
+            重定向： return "redirect:/b" 底层创建的是RedirectView对象。
+            返回逻辑视图名称的，则创建的是thymeleafView对象。（加前缀，加后缀...处理）
+
+
+
+
+
+     新：
+     <mvc:view-controller>
+     这个配置信息，可以在springmvc.xml文件中进行配置，作用是什么？
+     <mvc:view-controller path="" view-name="">
+
+
+     新：
+     <mvc:annotation-driven/>
+     这个配置信息叫做开启注解驱动，在springmvc.xml文件中配置
+     当你使用了<mvc:view-controller>配置，会让你整个项目中所有的注解全部失效，你需要使用以上的配置来再次开启注解。
+
+
+     新：
+     关于静态资源的处理：
+     假设我们在webapp目录下有static目录，static目录下有tongxue.jpeg图片
+     我们可以在浏览器地址栏上直接访问：http://localhost:8080/spirngmvc/static/img/tongxue.jpeg吗？   不行
+     因为会走DispatcherServlet,导致发生404错误
+
+     怎么办？有两种解决方案
+        第一种解决方案：开启默认的Servlet处理
+            在Tomcat服务器中提供了一个默认的Servlet，叫做:org.apache.catalina.servlets.Defaultet
+            在tomcat10/conf/web.xml文件中，有这个默认的Servlet的相关配置。
+            不过，这个默认的Servlet默认情况下是不开启的
+            你需要在springmvc.xml文件中使用以下配置进行开启：
+                <mvc:default-servlet-handler/>
+                <mvc:annotation-driver/>
+            开启之后的作用是，当你访问 http://localhost:8080/springmvc/static/img/tongxue.jpeg的时候，
+            默认先走DispatcherServlet，如果发生404错误的话，会自动走DefaultServelt,然后走DefalutServlet
+            帮你定位静态资源。
+
+
+
+        第二种解决方案：配置静态资源，在springmvc.xml文件中添加如下配置：
+            <mvc:resource mapping="/static/**"  location="/static/" />
+            <mvc:annotation-driven />
+
+            当请路径符合 /static/**的时候，去 /static/ 位置找资源。
+
+             xmlns:mvc="http://www.springframework.org/schema/mvc"  导入的是这个依赖
+
+
+
+
+        新：
+        RESTFul编程风格：
+            restful是web服务接口的一种设计风格
+            RESTFul定义了一组约束条件和规范，可以让web服务接口：更加简介、易于理解、易于扩展、安全可靠
+
+            web服务，可以理解成一个url地址发送，后端经过一系列处理，展示数据
+            web服务接口，发送的那个url，就可以看成web服务接口的地址  如：/springmvc/user/detail?id=1
+            而restful是针对web服务接口 的一种设计风格
+            web服务接口的地址，只是web服务接口的一部分
+
+            【Web服务是一个通过网络提供服务的软件系统，而Web服务接口则定义了如何访问和使用这个服务。】
+
+            RESTFul对URL的约束和规范的核心是：通过采用 【不同的请求方式 + url 来确定web服务器中的资源 】
+
+            RESTFuld：表属性状态转移。简称REST
+            表属性是：URL + 请求方式
+            状态是：服务端的数据
+            转移是：变化
+            表属性转态转移是指：通过 URL + 请求方式 来控制服务端数据的变化。
+
+
+            RESTFul对一个WEB服务接口 都规定了那些东西？
+             对请求URL格式有约束和规范
+             对HTTP的请求方式有约束和规范
+
+         什么是RESTFul?
+         RESTFul是对WEB服务接口的一种设计风格，提供了一套约束，可以让WEB服务接口更加简介、易于理解。
+         REST对于请求方式的约束是这样的：
+            查询get
+            新增：post
+            删除：delete
+            修改：put
+
+         REST对URL的约束是这样的：
+            GET /user/1 查一个
+            GET /user 查所有
+            POST /user 新增
+            PUT /user 修改
+            DELETE /user/1 删除一个
+
+         RESTfUl：是表属性状态转移
+         本质上：通过URL + 请求方式  来控制服务端数据的变化。
+
+
+
+     新:
+     RESTFul编程风格中要求，修改的时候，必须提交PUT/DELETE/PATCH请求，怎么提交PUT请求呢？
+     第一步：要想发送PUT请求，首先你必须是一个POST请求。（POST请求是大前提）
+     第二步：在POST请求的表单中添加隐藏域：
+            <!--隐藏域-->
+            <input type="hidden" name="_method" value="put">
+            强调：name必须是_method,value必须是put/PUT
+                如果你要发送delete请求的话，value写：delete/DELETE即可。
+     第三步：添加一个过滤器
+            <!--添加一个过滤器，这个过滤器是springmvc提前写好的，直接用就行了，这个过滤器可以帮助你请求POST转换成PUT/DELETE请求-->
+            <filter>
+                    <filter-name>hiddenHttpMethodFilter</filter-name>
+                    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+            </filter>
+            <filter-mapping>
+                    <filter-name>hiddenHttpMethodFilter</filter-name>
+                    <url-pattern>/*</url-pattern>
+            </filter-mapping>
+
+
+     新：
+     HTTPMessageConverter  http消息转换器，它是一个接口。
+     实现有：
+     StringHttpMessageConverter(默认的，几乎没有怎么转，字符串互相转换，既能请求体，又能响应体)
+     FormHttpMessageConverter（专门用于请求体）
+     上面两个针对协议中的体
+
+     MappingJackson2HttpMessageConverter
+     专门针对请求中jassion数据的转换，请求头，响应头。
+
+     Http消息就是Http协议，Http协议包括 请求协议 和 响应协议
+
+     转换器转换的是什么？
+     转换的是 【HTTP协议】 与 【Java程序中对象】 之间的互相转换
+
+     如请求消息的请求体：username=admin&password=1234,在方法处理器的参数上User user，请求中的数据是如何转换成user对象的，HttpMessageConverter接口中的其中一个实现类FormHttpMessageConverter
+     如StringHttpMessageConverter负责将视图对象中的HTML字符串写入到HTTP协议的响应体重，最终完成响应。（StringHttpMessageConverter是负责将java对象转换为响应协议的），比如说在返回逻辑视图名称的时候。
+     重点：
+        @ResponseBody
+        @RequestBody
+        @ResponseEntity
+        @RequestEntity
+
+
+     28：在springMVC中如何使用原生ServletApi完成AJAX请求的响应
+        @RequestMapping(value = "/ajax1",method = RequestMethod.GET)
+            public String ajax1(HttpServletResponse response) throws IOException {
+                PrintWriter writer = response.getWriter();
+                writer.println("hello ajax,i am springmvc1");
+                return null;
+            }
+
+        @RequestMapping(value = "/ajax2",method = RequestMethod.GET)
+            public void ajax2(HttpServletResponse response) throws IOException {
+                PrintWriter writer = response.getWriter();
+                writer.println("hello ajax,i am springmvc2");
+            }
+
+
+        29：
+        @ResponseBody 注解 （非常重要，使用非常多，因为以后大部分都是AJAX请求）
+
+            @RequestMapping(value = "/ajax",method = RequestMethod.GET)
+            @ResponseBody
+            public String ajax3() {
+                return "这真是个好东西";
+            }
+
+        重点：一旦处理器方法上添加了 @ResponseBody 注解，那么 return 返回语句，返回的将不是一个 “逻辑视图名称” 了。而是直接将返回结果采用字符串的形式响应给浏览器。
+
+        当返回值类型是字符串时：
+        底层实现原理实际上代替的就是：
+            PrintWriter out=response.getWriter();
+            out.print("hello ajax,my name is Spirng MVC!");
+            以上程序使用的HTTP消息转换器是：StringHttpMessageConverter
+
+
+
+        当返回值类型是java对象时：
+        @RequestMapping(value = "/ajax", method = RequestMethod.GET)
+            @ResponseBody
+            public User ajax4() {
+                User user = new User(111l, "嘉嘉", "15968");
+                return user;
+            }
+        当一个处理器方法上面有 @ResponseBody注解，并且返回的是一个java对象，例如user,那么springmvc框架，会自动将user对象转换成json格式的字符串，响应给浏览器。
+        当然，你必须要在pom.xml文件中引入一个可以处理的json的依赖，例如jackson:
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                    <version>2.17.0</version>
+                </dependency>
+        以上程序中使用的消息转换器是：MappingJackson2HttpMessageConverter
+
+
+        30.非常好用的注解：@RestController
+           它出现在类上，等于@Controller + @ResponseBody
+           @RestController 它是一个复合注解
+           当一个类上添加@RestController注解之后，表示该类上自动添加了@Controller注解，并且该类中所有的方法上都会自动添加@ResposeBody 注解。
+
+
+        31:关于 @RequestBody 注解
+          该注解只能使用在处理器方法的形参上
+          这个注解的作用是直接将请求体传递给java程序，在java程序中可以直接使用一个String类型的变量接收这个请求体的内容。
+          底层使用的HTTP消息转换器：FormHttpMessageConverter
+
+          关于@RequestBody 注解的重要用法：如果前端请求体当中提交的数据室JSON格式，那么@RequestBody 可以将提交的JSON格式的字符串转换成java对象。
+          注意：同样需要使用jackson的依赖。
+                            <dependency>
+                                <groupId>com.fasterxml.jackson.core</groupId>
+                                <artifactId>jackson-databind</artifactId>
+                                <version>2.17.0</version>
+                            </dependency>
+          然后，要注意@RequestBody标注在处理器方法的形参上，也就是说形参只要准备一个user对象就行了，前端提交一个json字符串，直接将其转换成java对象user
+          没有使用的时候只能用请求体换位java对象，加上了requestBody之后，json格式也可以转换为java对象了。
+          以上前端请求提交JSON格式的字符串，那么后端直接将json格式字符串转换成java对象，这里使用的消息转换器是，MappingJack2HttpMessageConverter
+
+
+          32.异常处理器作用：处理器方法执行过程中出现了异常，跳转到对应的视图，在视图上展示友好信息。

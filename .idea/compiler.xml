@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="springmvc-007" />
+        <module name="springmvc-006" />
+        <module name="spirngmvc-1" />
+        <module name="springmvc-005" />
+        <module name="springmvc-004" />
+        <module name="springmvc-003" />
+        <module name="springmvc-002" />
+        <module name="springmvc-001" />
+        <module name="springmvc-011" />
+        <module name="ssm-annotation" />
+        <module name="springmvc-009" />
+        <module name="springmvc-008" />
+        <module name="springmvc-annotation" />
+        <module name="usermgt" />
+        <module name="fuxi-004" />
+        <module name="fuxi-002" />
+        <module name="fuxi-001" />
+        <module name="springmvc-010" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fuxi-003" target="17" />
+      <module name="spirng-011" target="17" />
+      <module name="spring-test01" target="17" />
+      <module name="springmvc-00001" target="17" />
+      <module name="springmvc-0001" target="17" />
+      <module name="test-001" target="17" />
+      <module name="untitled" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="springmvc-004" options="-parameters" />
+    </option>
+  </component>
+</project>

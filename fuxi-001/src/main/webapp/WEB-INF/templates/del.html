@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a th:href="@{/user/120}" onclick="dele(event)">删除用户id=120的用户信息</a>
+<form id="delForm" method="post">
+    <input type="hidden" name="_method" value="deletE">
+</form>
+
+<script>
+    function dele(event){
+        //获取表单
+        let delFrom = document.getElementById("delForm");
+        //给form的action赋值
+        delFrom.action=event.target.href;
+        //发送post请求提交表单
+        delFrom.submit();
+        //阻止超链接的默认行为
+        event.preventDefault();
+    }
+</script>
+</body>
+</html>

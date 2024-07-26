@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>first springMVC</title>
+</head>
+<body>
+   <h1>first Spring MVC!</h1>
+   <a href="/fuxi/heihei">heihei</a> <br/>
+   <a href="heihei">heihei</a>  <br/>
+   <a th:href="@{/heihei}">heihei</a>
+</body>
+</html>

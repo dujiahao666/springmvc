@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com.powernode.springmvc.controller"/>
+
+    <bean id="thymeleafViewResolver" class="org.thymeleaf.spring6.view.ThymeleafViewResolver">
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="order" value="1"/>
+        <property name="templateEngine">
+            <bean class="org.thymeleaf.spring6.SpringTemplateEngine">
+                <property name="templateResolver">
+                    <bean class="org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver">
+                        <property name="prefix" value="/WEB-INF/templates/"/>
+                        <property name="suffix" value=".html"/>
+                        <property name="templateMode" value="HTML"/>
+                        <property name="characterEncoding" value="UTF-8"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+<!--     配置属于自己的异常处理器-->
+    <bean  class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <!--这里可以配置很多键值对，key是异常，要提供具体的类型，包括包名-->
+                <!--以下的配置表示，只要发生异常，都跳转到tip视图，出错时会按照配置顺序依次匹配异常类型，使用第一个匹配成功的异常类型对应的视图进行跳转。-->
+                <prop key="java.lang.Exception">tip</prop>
+            </props>
+        </property>
+            <property name="exceptionAttribute" value="yiChang"/>
+    </bean>
+
+<!--    <mvc:view-controller path="/" view-name="index"/>-->
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven/>
+</beans>

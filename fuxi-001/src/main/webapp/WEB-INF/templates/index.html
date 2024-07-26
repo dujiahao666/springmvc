@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>Title</title>
+<!-- 这里并不是html代码，而是Thymeleaf的模板字符串
+   只有thymeleaf的模板引擎才可以解析
+   将下面的thymeleaf末班字符串转换成浏览器能看懂的html代码-->
+</head>
+<body>
+<h1>欢迎来到首页</h1>
+<a th:href="@{/first}">spirngmvc first</a>
+<form th:action="@{/jk1}" method="get">
+    用户名：<input type="text" name="username"><br/>
+    密码：<input type="password" name="password"><br/>
+    <input type="submit" value="注册">
+</form>
+<hr/>
+<h1>request</h1>
+<a th:href="@{/request}">request请求与方法一</a><br/>
+<a th:href="@{/request2}">request请求与方法2</a><br/>
+<a th:href="@{/request3}">request请求与方法3</a><br/>
+<a th:href="@{/request4}">request请求与方法4</a><br/>
+<hr/>
+<a th:href="@{/session1}">session域方法一</a>
+<hr/>
+<a th:href="@{/app1}">application域方法一</a>
+<hr/>
+<a th:href="@{/aa1?name=18}">点击测试</a><br>
+<!--上面这种情况是可以的，使用的是普通的-->
+<a th:href="@{/aa/12}">点击测试2</a>
+<!--@RequestMapping("/aa/{iop}") 后端用这个去接收是可以的，这种情况的好处是，简介，方便 -->
+
+<hr/>
+<h2>测试了</h2>
+
+
+
+
+
+</body>
+</html>

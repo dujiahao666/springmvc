@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>测试三个域对象</title>
+</head>
+<body>
+<h1>测试三个域对象</h1>
+<h3>request域</h3>
+<hr/>
+<a th:href="@{/testServletAPI}">使用原生的servlet的request，进行数据的共享</a>
+<br/>
+<a th:href="@{/testServletAPI2}">使用原生的springmvc的Model，进行数据的共享</a>
+<br/>
+<a th:href="@{/testServletAPI3}">使用原生的springmvc的map，进行数据的共享</a>
+<br/>
+<a th:href="@{/testServletAPI4}">使用原生的springmvc的modelmap，进行数据的共享</a>
+<br/>
+<a th:href="@{/testServletAPI5}">使用原生的springmvc的modelandview，进行数据的共享</a>
+<br/>
+<hr/>
+<h3>session域</h3>
+<a th:href="@{/session1}">原生方式的session域数据共享</a>
+<br/>
+<a th:href="@{/session2}">使用注解方式的session域数据共享</a>
+<br/>
+<a th:href="@{/session3}">测试三：使用注解方式的session域数据共享</a>
+<hr/>
+<hr/>
+<h3>application域</h3>
+<a th:href="@{/app}">获取应用域的信息</a>
+</body>
+</html>
